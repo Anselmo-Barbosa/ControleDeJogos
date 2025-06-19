@@ -15,13 +15,14 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long matricula;
+    private String matricula;
     private String nome;
     private String telefone;
     private String senha;
 
     @Enumerated(EnumType.STRING)
-    private EnumUsuario tipoUsuario;
+    private EnumUsuario tipoUsuario = EnumUsuario.ATLETA;
+
 
 }
 

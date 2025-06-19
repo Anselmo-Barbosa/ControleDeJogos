@@ -3,7 +3,7 @@ package com.ifs.controlejogos.dto;
 import com.ifs.controlejogos.entities.Usuario;
 
 public class UsuarioMinDTO {
-    private long matricula;
+    private String matricula;
     private String nome;
 
     public UsuarioMinDTO(){

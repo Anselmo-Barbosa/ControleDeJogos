@@ -3,24 +3,20 @@ package com.ifs.controlejogos.dto;
 import com.ifs.controlejogos.entities.EnumUsuario;
 import com.ifs.controlejogos.entities.Usuario;
 import com.ifs.controlejogos.repository.UsuarioRepository;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UsuarioDTO {
     private Long id;
     private String nome;
-    private Long matricula;
+    private String matricula;
     private String telefone;
     private EnumUsuario tipoUsuario;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-
-  public UsuarioDTO(){
-  }
 
   public UsuarioDTO(Usuario usuarioDto){
       this.id = usuarioDto.getId();
