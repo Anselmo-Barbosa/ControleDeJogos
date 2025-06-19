@@ -22,9 +22,13 @@ public class UsuarioService {
 
     //C
     public Usuario criarUsuario(Usuario usuario) {
-        return usuarioRepository.save(usuario);
+        if(usuarioRepository.existsByMatricula(usuario.getMatricula())){
+            throw new RuntimeException("Ja existe um usuario cadastrado com essa matricula!");
+        }
+        else {
+            return usuarioRepository.save(usuario);
+        }
     }
-
     //R
     @Transactional(readOnly = true)
     public List<UsuarioDTO> listarUsuarios() {
