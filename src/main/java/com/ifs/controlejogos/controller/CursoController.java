@@ -18,7 +18,7 @@ public class CursoController {
 
     //C
     @PostMapping()
-    public Curso createUsuario(@RequestBody Curso curso) {
+    public Curso createCurso(@RequestBody Curso curso) {
         return cursoService.criarCurso(curso);
     }
 
