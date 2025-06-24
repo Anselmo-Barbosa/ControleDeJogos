@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -19,4 +21,12 @@ public class Curso {
 
     @Enumerated(EnumType.STRING)
     private EnumCurso tipoCurso;
+
+    @ManyToOne()
+    @JoinColumn(name = "id_campus")
+    private Campus campus;
+
+    @OneToMany(mappedBy = "curso")
+    private List<Equipe> equipes;
+
 }

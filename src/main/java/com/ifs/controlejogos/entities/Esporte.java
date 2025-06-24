@@ -1,13 +1,12 @@
 package com.ifs.controlejogos.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @Builder
@@ -21,4 +20,13 @@ public class Esporte {
     private String nome;
     private Integer min_jogadores;
     private Integer max_jogadores;
+
+    @OneToMany(mappedBy = "esporte")
+    private List<Jogo> jogos;
+
+    @OneToMany(mappedBy = "esporte")
+    private List<Equipe> equipes;
+
+    @OneToMany(mappedBy = "esporte")
+    private List<Grupo> grupos;
 }

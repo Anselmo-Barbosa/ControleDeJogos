@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -23,6 +25,12 @@ public class Usuario {
 
     @Enumerated(EnumType.STRING)
     private EnumUsuario tipoUsuario = EnumUsuario.ATLETA;
+
+    @ManyToMany()
+    @JoinTable(name = "atleta_equipe",
+            joinColumns = @JoinColumn(name = "id_usuario"),
+            inverseJoinColumns = @JoinColumn(name = "id_equipe"))
+    private List<Equipe> equipes;
 
 
 }

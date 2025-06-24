@@ -20,7 +20,12 @@ public class Evento {
     private String nome;
     private String data;
     private String hora;
-    private EnumCurso tipoCurso;
+    private EnumCurso tipoEvento;
 
+    @OneToMany(mappedBy = "evento")
+    private List<Jogo> jogos;
 
+    @ManyToOne
+    @JoinColumn(name = "id_campus")
+    private Campus campus;
 }

@@ -23,6 +23,29 @@ public class Jogo {
     private Integer placarEquipeB;
 
 
+    @ManyToOne
+    @JoinColumn(name = "id_evento")
+    private Evento evento;
+
+    @ManyToOne
+    @JoinColumn(name = "id_esporte")
+    private Esporte esporte;
+
+    @ManyToOne()
+    @JoinColumn(name = "id_campus")
+    private Campus campus;
+
+
+    //Mapeamento unidirecional, sem precisar mapear Jogo em equipe (So quero acessar os
+    // jogos a partir da equipe)
+    @ManyToOne
+    @JoinColumn(name = "id_equipe_a")
+    private Equipe equipeA;
+
+    @ManyToOne
+    @JoinColumn(name = "id_equioe_b")
+    private Equipe equipeB;
+
 
 
 
