@@ -1,15 +1,15 @@
 package com.ifs.controlejogos.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@Data
-@Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -18,6 +18,13 @@ public class Equipe {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
+    @Column(name = "recebeu_bye")
+    private Boolean recebeuBye = false;
+    private Integer vitorias = 0;
+    private Integer derrotas = 0;
+
+    @Column(nullable = false)
+    private Integer pontuacao = 0;
 
     @ManyToOne
     @JoinColumn(name = "id_curso")
@@ -31,7 +38,19 @@ public class Equipe {
     @JoinColumn(name = "id_grupo")
     private Grupo grupo;
 
-    @ManyToMany(mappedBy = "equipes")
-    private List<Usuario> usuarios;
+    @ManyToMany(mappedBy = "equipes",fetch = FetchType.EAGER)
+    private List<Usuario> usuarios = new ArrayList<>() ;
 
+    @OneToOne
+    @JoinColumn(name = "id_tecnico")
+    private Usuario tecnico;
+
+    @Transient
+    private Long cursoId;
+
+    @Transient
+    private Long EsporteId;
+
+    @Transient
+    private List<Long> usuariosId;
 }

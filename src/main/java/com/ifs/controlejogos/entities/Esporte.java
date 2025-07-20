@@ -1,15 +1,14 @@
 package com.ifs.controlejogos.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@Data
-@Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -17,16 +16,25 @@ public class Esporte {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
+    @NotNull
     private String nome;
+    @NotNull
     private Integer min_jogadores;
+    @NotNull
     private Integer max_jogadores;
 
     @OneToMany(mappedBy = "esporte")
-    private List<Jogo> jogos;
+    private List<Jogo> jogos = new ArrayList<>();
 
     @OneToMany(mappedBy = "esporte")
-    private List<Equipe> equipes;
+    private List<Equipe> equipes = new ArrayList<>();
 
     @OneToMany(mappedBy = "esporte")
-    private List<Grupo> grupos;
+    private List<Grupo> grupos = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "evento_id")
+    private Evento evento;
+
 }

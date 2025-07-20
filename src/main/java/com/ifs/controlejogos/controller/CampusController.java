@@ -1,5 +1,6 @@
 package com.ifs.controlejogos.controller;
 
+import com.ifs.controlejogos.dto.CampusDTO;
 import com.ifs.controlejogos.entities.Campus;
 import com.ifs.controlejogos.entities.Curso;
 import com.ifs.controlejogos.services.CampusService;
@@ -17,30 +18,30 @@ public class CampusController {
 
     //C
     @PostMapping()
-    public Campus createCampus(@RequestBody Campus campus) {
+    public CampusDTO criarCampus(@RequestBody Campus campus) {
         return campusService.criarCampus(campus);
     }
 
     //R
-    @GetMapping("/list")
-    public List<Campus> showCampus() {
+    @GetMapping("/listar")
+    public List<CampusDTO> listarCampus() {
         return campusService.listarCampus();
     }
 
     //U
-    @PutMapping("/update/{id}")
-    public void updateCampus(@PathVariable Long id, @RequestBody Campus campus) {
+    @PutMapping("/atualizar/{id}")
+    public void atualizarCampus(@PathVariable Long id, @RequestBody Campus campus) {
         campusService.atualizarCampus(id, campus);
     }
 
     //D
-    @DeleteMapping("/delete/{id}")
-    public void deleteCampus(@PathVariable Long id) {
+    @DeleteMapping("/deletar/{id}")
+    public void deletarCampus(@PathVariable Long id) {
         campusService.deletarCampus(id);
     }
 
     @GetMapping("/{id}")
-    public Campus findById(@PathVariable Long id) {
+    public CampusDTO acharPorId(@PathVariable Long id) {
         return campusService.acharPorId(id);
     }
 

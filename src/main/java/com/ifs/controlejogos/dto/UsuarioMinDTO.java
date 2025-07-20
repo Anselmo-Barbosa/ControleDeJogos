@@ -12,7 +12,6 @@ public class UsuarioMinDTO {
     public UsuarioMinDTO(Usuario usuarioMinDto){
         this.nome=usuarioMinDto.getNome();
         this.matricula = usuarioMinDto.getMatricula();
-
     }
 }
 

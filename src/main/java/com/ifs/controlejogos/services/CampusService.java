@@ -1,8 +1,10 @@
 package com.ifs.controlejogos.services;
 
+import com.ifs.controlejogos.dto.CampusDTO;
 import com.ifs.controlejogos.entities.Campus;
 import com.ifs.controlejogos.entities.Curso;
 import com.ifs.controlejogos.repository.CampusRepository;
+import com.ifs.controlejogos.repository.CursoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,22 +14,29 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class CampusService {
 
     @Autowired
     private CampusRepository campusRepository;
+    @Autowired
+    private CursoRepository cursoRepository;
 
 
     //C
-    public Campus criarCampus(Campus campus) {
-        return campusRepository.save(campus);
+    public CampusDTO criarCampus(Campus campus){
+        campusRepository.save(campus);
+
+        return new CampusDTO(campus);
     }
 
     //R
     @Transactional(readOnly = true)
-    public List<Campus> listarCampus() {
-        return campusRepository.findAll();
+    public List<CampusDTO> listarCampus() {
+        List<Campus> listacampus = campusRepository.findAll();
+
+        return listacampus.stream()
+                .map(campus -> new CampusDTO(campus))
+                .toList();
     }
 
     //U
@@ -49,22 +58,17 @@ public class CampusService {
 
     //D
     public void deletarCampus(Long id) {
-        Optional<Campus> resultado = campusRepository.findById(id);
+        Campus resultado = campusRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Campus não encontrado"));
 
-        if (resultado.isPresent()) {
             campusRepository.deleteById(id);
-        } else {
-            throw new RuntimeException("Este ID não está vinculado com nenhum campus!");
-        }
     }
-    public Campus acharPorId(Long id){
-        Optional<Campus> resultado = campusRepository.findById(id);
 
-        if (resultado.isPresent()){
-            return resultado.get();
-        }
-        else {
-            throw new RuntimeException("Este ID não está vinculado com nenhum campus!");
-        }
+    public CampusDTO acharPorId(Long id){
+       Campus resultado = campusRepository.findById(id)
+               .orElseThrow(() -> new RuntimeException("Campus não encontrado"));
+
+            return new CampusDTO(resultado);
+
     }
 }

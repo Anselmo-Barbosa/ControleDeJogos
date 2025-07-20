@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -25,8 +26,10 @@ public class Grupo {
     @JoinColumn(name = "id_esporte")
     private Esporte esporte;
 
-
     @OneToMany(mappedBy = "grupo")
-    private List<Equipe> equipes;
+    private List<Equipe> equipes = new ArrayList<>() ;
+
+    @OneToMany(mappedBy = "grupo",cascade = CascadeType.ALL)
+    private List<Jogo> jogos = new ArrayList<>();
 
 }

@@ -1,8 +1,16 @@
 package com.ifs.controlejogos.services;
 
+import com.ifs.controlejogos.dto.CampusDTO;
+import com.ifs.controlejogos.dto.CoordenadorDTO;
 import com.ifs.controlejogos.dto.UsuarioDTO;
+import com.ifs.controlejogos.entities.Curso;
+import com.ifs.controlejogos.entities.Usuario;
 import com.ifs.controlejogos.entities.EnumUsuario;
 import com.ifs.controlejogos.entities.Usuario;
+import com.ifs.controlejogos.form.CoordenadorFORM;
+import com.ifs.controlejogos.form.UsuarioFORM;
+import com.ifs.controlejogos.repository.CursoRepository;
+import com.ifs.controlejogos.repository.UsuarioRepository;
 import com.ifs.controlejogos.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,137 +27,123 @@ public class UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+    @Autowired
+    private CursoRepository cursoRepository;
 
     //C
-    public Usuario criarUsuario(Usuario usuario) {
-        if(usuarioRepository.existsByMatricula(usuario.getMatricula())){
+    public UsuarioDTO criarUsuario(UsuarioFORM usuarioForm) {
+        if (usuarioRepository.existsByMatricula(usuarioForm.getMatricula())){
             throw new RuntimeException("Ja existe um usuario cadastrado com essa matricula!");
         }
-        else {
-            return usuarioRepository.save(usuario);
-        }
+
+        Curso curso = cursoRepository.findById(usuarioForm.getCursoId())
+                .orElseThrow(() -> new RuntimeException("Curso com ID " + usuarioForm.getCursoId() + " não encontrado!"));
+
+        Usuario usuario = new Usuario();
+        usuario.setNome(usuarioForm.getNome());
+        usuario.setTelefone(usuarioForm.getTelefone());
+        usuario.setMatricula(usuarioForm.getMatricula());
+        usuario.setSenha(usuarioForm.getSenha());
+        usuario.setCurso(curso);
+        usuarioRepository.save(usuario);
+
+        return new UsuarioDTO(usuario);
     }
     //R
     @Transactional(readOnly = true)
     public List<UsuarioDTO> listarUsuarios() {
         List<Usuario> listausuarios = usuarioRepository.findAll();
+
         return listausuarios.stream().map(e -> new UsuarioDTO(e)).toList();
+    }
+    @Transactional(readOnly = true)
+    public List<UsuarioDTO> listarUsuariosPorTipo(EnumUsuario enumUsuario) {
+        List<Usuario> listausuarios = usuarioRepository.findByTipoUsuario(enumUsuario);
+
+        return listausuarios.stream().map(e -> new UsuarioDTO(e)).toList();
+
+
     }
     //U
     public void atualizarUsuario(Long id, Usuario usuario) {
-        Optional<Usuario> resultado = usuarioRepository.findById(id);
+        Usuario usuarioEncontrado = usuarioRepository.findById(id).
+                orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
 
-        if (resultado.isPresent()) {
-            Usuario usuarioExistente = resultado.get();
+        usuarioEncontrado.setNome(usuario.getNome());
+        usuarioEncontrado.setTelefone(usuario.getTelefone());
+        usuarioEncontrado.setSenha(usuario.getSenha());
 
-            usuarioExistente.setNome(usuario.getNome());
-            usuarioExistente.setTelefone(usuario.getTelefone());
-
-            usuarioRepository.save(usuarioExistente);
-        } else {
-            throw new RuntimeException("Esse ID não está vinculado com nenhum usuario!");
-        }
+        usuarioRepository.save(usuarioEncontrado);
     }
     //D
     public void deletarUsuario(Long id) {
-        Optional<Usuario> resultado = usuarioRepository.findById(id);
+        usuarioRepository.findById(id).
+                orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
 
-        if (resultado.isPresent()) {
-            usuarioRepository.deleteById(id);
-        } else {
-            throw new RuntimeException("Este ID não está vinculado com nenhum usuario!");
-        }
+        usuarioRepository.deleteById(id);
     }
 
     @Transactional(readOnly = true)
     public UsuarioDTO acharPorId(Long id) {
-        Optional<Usuario> usuario = usuarioRepository.findById(id);
-        if (usuario.isPresent()) {
-            return new UsuarioDTO(usuario.get());
-        } else {
-            throw new RuntimeException("Este ID não está vinculado com nenhum usuario!");
-        }
+      Usuario usuarioEncontrado = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
+
+        return new UsuarioDTO(usuarioEncontrado);
     }
 
     @Transactional(readOnly = true)
     public UsuarioDTO acharPorMatricula(String matricula) {
-        Usuario usuario = usuarioRepository.findByMatricula(matricula)
+        Usuario usuarioEncontrado = usuarioRepository.findByMatricula(matricula)
                 .orElseThrow(() -> new RuntimeException("Esta matricula não está vinculado com nenhum usuario!"));
 
-        return new UsuarioDTO(usuario);
+        return new UsuarioDTO(usuarioEncontrado);
     }
 
-    //Metodo especial exclusivo para pre-Cadastrar coodernadores
-    public Usuario criarCoordernador(String nome, String telefone) {
-        Usuario coodenador = new Usuario();
-
-        coodenador.setNome(nome);
-        coodenador.setTelefone(telefone);
-        coodenador.setTipoUsuario(EnumUsuario.COORDENADOR);
-
-        //Gerando um login (falsa matricula pro atributo)
-        String prefixo = "COORD";
-        int sufixo = (int) (Math.random() * 10000);
-        String loguinGerado = prefixo + sufixo;
-
-        coodenador.setMatricula(loguinGerado);
-
-        //Gerando uma por meio de uma UUID, usado na maioria dos sites (gera uma senha de 0 a 10 impossivel de se repetir)
-        String senhaGerada = UUID.randomUUID().toString().substring(0, 10);
-        coodenador.setSenha(senhaGerada);
-
-        //Simular o envio do email pelo console
-        System.out.println("Coodenador pré cadastrado com sucesso!");
-        System.out.println("id: " + coodenador.getId());
-        System.out.println("Nome: " + coodenador.getNome());
-        System.out.println("Telefone: " + coodenador.getTelefone());
-        System.out.println("Login: " + coodenador.getMatricula());
-        System.out.println("Senha: " + coodenador.getSenha());
-
-        return usuarioRepository.save(coodenador);
-
-    }
-
-    @Transactional(readOnly = true)
-    //Usando stream pra manejar a Lista (Fitrar, alterar. e jogar em outra lista novamente)
-    public List<UsuarioDTO> listarCoodenadores() {
-        List<UsuarioDTO> coordenadores = usuarioRepository.findAll().stream()
-                .filter(usuario -> usuario.getTipoUsuario() == EnumUsuario.COORDENADOR) //
-                .map(UsuarioDTO::new)
-                .toList();
-
-        if (coordenadores.isEmpty()) {
-            throw new RuntimeException("Nenhum coordenador encontrado!");
+    public CoordenadorDTO criarCoordernador(CoordenadorFORM coordenadorForm) {
+        if (usuarioRepository.existsByMatricula(coordenadorForm.getMatricula())){
+            throw new RuntimeException("Ja existe um COORDENADOR cadastrado com essa matricula!");
         }
 
-        return coordenadores;
+        Usuario coordenador = new Usuario();
+
+        coordenador.setNome(coordenadorForm.getNome());
+        coordenador.setTelefone(coordenadorForm.getTelefone());
+        coordenador.setMatricula(coordenadorForm.getMatricula());
+        coordenador.setTipoUsuario(EnumUsuario.COORDENADOR);
+
+        //Gerando uma senha por meio de uma UUID (gera uma senha de 0 a 8 impossivel de se repetir)
+        String senhaGerada = UUID.randomUUID().toString().substring(0, 8);
+        coordenador.setSenha(senhaGerada);
+
+
+        System.out.println("Coodenador pré cadastrado com sucesso! Informações de login enviadas por email");
+        System.out.println("id: " + coordenador.getId());
+        System.out.println("Nome: " + coordenador.getNome());
+        System.out.println("Telefone: " + coordenador.getTelefone());
+        System.out.println("Login: " + coordenador.getMatricula());
+        System.out.println("Senha: " + coordenador.getSenha());
+        usuarioRepository.save(coordenador);
+
+        return new CoordenadorDTO(coordenador);
+
     }
 
     public void tornarTecnico(Long id) {
-        Optional<Usuario> tecnico = usuarioRepository.findById(id);
+        Usuario tecnicoEncontrado = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Esta matricula não está vinculado com nenhum USUARIO!"));
 
-        if (tecnico.isPresent()) {
-            Usuario usuarioExistente = tecnico.get();
-
-            usuarioExistente.setTipoUsuario(EnumUsuario.TECNICO);
-
-            usuarioRepository.save(usuarioExistente);
-            System.out.println("Função TECNICO atribuida á " + usuarioExistente.getNome());
-        }
-    }
-
-    @Transactional(readOnly = true)
-    public List<UsuarioDTO> listarTecnicos() {
-        List<UsuarioDTO> tecnicos = usuarioRepository.findAll().stream()
-                .filter(usuario -> usuario.getTipoUsuario() == EnumUsuario.TECNICO) //
-                .map(UsuarioDTO::new)
-                .toList();
-
-        if (tecnicos.isEmpty()) {
-            throw new RuntimeException("Nenhum coordenador encontrado!");
+        //Não pode atribuir a funcão tecnico a um COORDENADOR
+        if(tecnicoEncontrado.getTipoUsuario() != EnumUsuario.ATLETA) {
+            throw new RuntimeException("Só é possível atribuir a função TECNICO á um ATLETA");
         }
 
-        return tecnicos;
+        if(!tecnicoEncontrado.getEquipes().isEmpty()){
+            throw new RuntimeException("Operação invalida: Não é possível atribuir a função TECNICO a um JOGADOR na equipe");
+        }
+
+            tecnicoEncontrado.setTipoUsuario(EnumUsuario.TECNICO);
+            usuarioRepository.save(tecnicoEncontrado);
+            System.out.println("Função TECNICO atribuida á " + tecnicoEncontrado.getNome());
     }
 }
 

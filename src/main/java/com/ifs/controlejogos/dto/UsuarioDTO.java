@@ -1,10 +1,12 @@
 package com.ifs.controlejogos.dto;
 
+
 import com.ifs.controlejogos.entities.EnumUsuario;
 import com.ifs.controlejogos.entities.Usuario;
-import com.ifs.controlejogos.repository.UsuarioRepository;
 import lombok.*;
-import org.springframework.beans.factory.annotation.Autowired;
+
+
+import java.util.List;
 
 @Data
 @Builder
@@ -16,6 +18,8 @@ public class UsuarioDTO {
     private String matricula;
     private String telefone;
     private EnumUsuario tipoUsuario;
+    private String curso;
+    private List<EquipeMinDTO> equipes;
 
 
   public UsuarioDTO(Usuario usuarioDto){
@@ -24,7 +28,12 @@ public class UsuarioDTO {
       this.matricula = usuarioDto.getMatricula();
       this.telefone = usuarioDto.getTelefone();
       this.tipoUsuario = usuarioDto.getTipoUsuario();
+      if(usuarioDto.getCurso() != null) {
+          this.curso = usuarioDto.getCurso().getNome();
+      }
+      this.equipes = usuarioDto.getEquipes().stream()
+              .map(equipe -> new EquipeMinDTO(equipe))
+              .toList();
   }
-
 
 }

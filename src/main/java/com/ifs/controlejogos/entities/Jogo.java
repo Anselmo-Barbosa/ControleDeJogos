@@ -1,14 +1,15 @@
 package com.ifs.controlejogos.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
+
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -16,24 +17,21 @@ public class Jogo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String data;
-    private String horaInicio;
-    private String horaFim;
+    @Column(name = "data_jogo")
+    private LocalDate data;
+    private LocalTime horaInicio;
+    private LocalTime horaFim;
     private Integer placarEquipeA;
     private Integer placarEquipeB;
+    private String vencedor;
+    private boolean finalizado;
 
-
-    @ManyToOne
-    @JoinColumn(name = "id_evento")
-    private Evento evento;
+    @Enumerated(EnumType.STRING)
+    private EnumFase fase;
 
     @ManyToOne
     @JoinColumn(name = "id_esporte")
     private Esporte esporte;
-
-    @ManyToOne()
-    @JoinColumn(name = "id_campus")
-    private Campus campus;
 
 
     //Mapeamento unidirecional, sem precisar mapear Jogo em equipe (So quero acessar os
@@ -43,11 +41,29 @@ public class Jogo {
     private Equipe equipeA;
 
     @ManyToOne
-    @JoinColumn(name = "id_equioe_b")
+    @JoinColumn(name = "id_equipe_b")
     private Equipe equipeB;
 
+    @ManyToOne
+    @JoinColumn(name = "id_grupo")
+    private Grupo grupo;
 
-
-
-
+    public Equipe getVencedorEquipe() {
+        if (placarEquipeA > placarEquipeB){
+            return equipeA;
+        }
+        else if (placarEquipeB > placarEquipeA) {
+            return equipeB;
+        }
+        //se empatarem no placar, vão desempatar na pontuação da classificatoria
+        else {
+            if(equipeA.getPontuacao()>equipeB.getPontuacao()){
+                return equipeA;
+            }
+            else if(equipeB.getPontuacao()>equipeA.getPontuacao()){
+                return equipeB;
+            }
+        }
+        return null;
+    }
 }

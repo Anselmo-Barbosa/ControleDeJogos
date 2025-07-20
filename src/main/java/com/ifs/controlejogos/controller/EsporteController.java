@@ -1,7 +1,9 @@
 package com.ifs.controlejogos.controller;
 
+import com.ifs.controlejogos.dto.EsporteDTO;
 import com.ifs.controlejogos.entities.Curso;
 import com.ifs.controlejogos.entities.Esporte;
+import com.ifs.controlejogos.form.EsporteFORM;
 import com.ifs.controlejogos.repository.EsporteRepository;
 import com.ifs.controlejogos.services.EsporteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,29 +19,29 @@ public class EsporteController {
     private EsporteService esporteService;
 
     @PostMapping()
-    public Esporte createEsporte(@RequestBody Esporte esporte) {
+    public EsporteDTO criarEsporte(@RequestBody EsporteFORM esporte) {
         return esporteService.criarEsporte(esporte);
     }
 
-    @GetMapping("/list")
-    public List<Esporte> showEsportes() {
+    @GetMapping("/listar")
+    public List<EsporteDTO> listarEsportes() {
         return esporteService.listarEsportes();
     }
 
     //U
-    @PutMapping("/update/{id}")
-    public void updateEsporte(@PathVariable Long id, @RequestBody Esporte esporte) {
+    @PutMapping("/atualizar/{id}")
+    public void atualizarEsporte(@PathVariable Long id, @RequestBody Esporte esporte) {
         esporteService.atualizarEsporte(id, esporte);
     }
 
     //D
-    @DeleteMapping("/delete/{id}")
-    public void deleteEsporte(@PathVariable Long id) {
-        esporteService.deletarCurso(id);
+    @DeleteMapping("/deletar/{id}")
+    public void deletarEsporte(@PathVariable Long id) {
+        esporteService.deletarEsporte(id);
     }
 
     @GetMapping("/{id}")
-    public Esporte findById(@PathVariable Long id) {
+    public EsporteDTO acharPorId(@PathVariable Long id) {
         return esporteService.acharPorId(id);
     }
 }

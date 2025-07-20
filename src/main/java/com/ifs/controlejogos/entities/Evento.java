@@ -1,15 +1,14 @@
 package com.ifs.controlejogos.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
-@Data
-@Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -18,14 +17,15 @@ public class Evento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
-    private String data;
-    private String hora;
+    @Enumerated(EnumType.STRING)
     private EnumCurso tipoEvento;
+    private String local;
+    private LocalDate dataInicio;
+    private LocalDate dataFim;
+    private String descricao;
+    private Boolean finalizado;
 
-    @OneToMany(mappedBy = "evento")
-    private List<Jogo> jogos;
+    @OneToMany(mappedBy = "evento", cascade = CascadeType.ALL)
+    private List<Esporte> esportes = new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn(name = "id_campus")
-    private Campus campus;
 }
