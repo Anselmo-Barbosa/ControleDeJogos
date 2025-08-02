@@ -25,6 +25,7 @@ public class Jogo {
     private Integer placarEquipeB;
     private String vencedor;
     private boolean finalizado;
+    private String formaFinalizacao = "Não atribuido";
 
     @Enumerated(EnumType.STRING)
     private EnumFase fase;

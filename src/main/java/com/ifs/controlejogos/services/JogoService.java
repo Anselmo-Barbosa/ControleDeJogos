@@ -6,7 +6,6 @@ import com.ifs.controlejogos.entities.*;
 import com.ifs.controlejogos.form.ConfigJogoFORM;
 import com.ifs.controlejogos.form.FinalizarJogoFORM;
 import com.ifs.controlejogos.repository.*;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -136,6 +135,7 @@ public class JogoService {
         jogo1.setPlacarEquipeA(jogo.getPlacarEquipeA());
         jogo1.setPlacarEquipeB(jogo.getPlacarEquipeB());
         jogo1.setFinalizado(true);
+        jogo1.setFormaFinalizacao("Padrão");
 
         //Atribuir um vencedor + pontuação
         if (jogo1.getPlacarEquipeA() > jogo1.getPlacarEquipeB()) {
@@ -147,8 +147,8 @@ public class JogoService {
         } else if (jogo1.getPlacarEquipeA() < jogo1.getPlacarEquipeB()) {
             jogo1.setVencedor(jogo1.getEquipeB().getNome());
             equipeB.setPontuacao(jogo1.getEquipeB().getPontuacao()+3);
-            equipeB.setVitorias(equipeA.getVitorias()+1);
-            equipeA.setDerrotas(equipeB.getDerrotas()+1);
+            equipeB.setVitorias(equipeB.getVitorias()+1);
+            equipeA.setDerrotas(equipeA.getDerrotas()+1);
         } else {
             jogo1.setVencedor("EMPATE");
             equipeA.setPontuacao(jogo1.getEquipeA().getPontuacao()+1);
@@ -172,7 +172,7 @@ public class JogoService {
             throw new RuntimeException("A equipe vencedora informada não está presente neste jogo.");
         }
 
-        // Atribuindo placar padrão de W.O
+        // Atribuindo placar de W.O
         if (equipeA.getId().equals(equipeVencedoraId)) {
             jogo.setPlacarEquipeA(1);
             jogo.setPlacarEquipeB(0);
@@ -184,6 +184,7 @@ public class JogoService {
         }
 
         jogo.setFinalizado(true);
+        jogo.setFormaFinalizacao("W.O");
 
         jogoRepository.save(jogo);
         return new JogoDTO(jogo);
@@ -197,11 +198,13 @@ public class JogoService {
                 throw new RuntimeException("Este jogo não foi finalizado por WO.");
             }
 
-            // Zerando os dados do WOf
+            // Zerando os dados do WO
             jogo.setPlacarEquipeA(0);
             jogo.setPlacarEquipeB(0);
             jogo.setVencedor(null);
             jogo.setFinalizado(false);
+            jogo.setFormaFinalizacao("Não atribuido");
+
 
             jogoRepository.save(jogo);
             return new JogoDTO(jogo);
@@ -240,8 +243,6 @@ public class JogoService {
     public boolean haConflitoHorario(LocalDate data, LocalTime novoInicio, LocalTime novoFim) {
         List<Jogo> jogosNoMesmoDia = jogoRepository.findByData(data);
 
-        //jogobanco: n09:00 as s11:00
-        //novo jogo: s08:00 as n10:00
         for (Jogo existente : jogosNoMesmoDia) {
             boolean sobreposicaoHorario =  novoInicio.isBefore(existente.getHoraFim()) && novoFim.isAfter(existente.getHoraInicio());
             if (sobreposicaoHorario) {

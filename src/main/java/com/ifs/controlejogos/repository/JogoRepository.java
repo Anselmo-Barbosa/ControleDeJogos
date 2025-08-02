@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface JogoRepository extends JpaRepository <Jogo,Long> {
@@ -18,4 +19,5 @@ public interface JogoRepository extends JpaRepository <Jogo,Long> {
     List<Jogo> findByEsporteAndFase(Esporte esporte, EnumFase fase);
     List<Jogo> findByData(LocalDate data);
     List<Jogo> findByFase(EnumFase fase);
+    Boolean existsByFase(EnumFase fase);
 }

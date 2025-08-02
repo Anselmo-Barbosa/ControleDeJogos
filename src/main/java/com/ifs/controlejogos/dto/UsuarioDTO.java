@@ -1,6 +1,7 @@
 package com.ifs.controlejogos.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ifs.controlejogos.entities.EnumUsuario;
 import com.ifs.controlejogos.entities.Usuario;
 import lombok.*;
@@ -9,9 +10,9 @@ import lombok.*;
 import java.util.List;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class UsuarioDTO {
     private Long id;
     private String nome;

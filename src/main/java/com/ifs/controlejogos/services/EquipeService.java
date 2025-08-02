@@ -6,7 +6,6 @@ import com.ifs.controlejogos.repository.CursoRepository;
 import com.ifs.controlejogos.repository.EquipeRepository;
 import com.ifs.controlejogos.repository.EsporteRepository;
 import com.ifs.controlejogos.repository.UsuarioRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,6 +59,15 @@ public class EquipeService {
             else {
                 throw new RuntimeException("Apenas ATLETAS podem competir");
             }
+            //Verificando se o atleta ja está em uma equipe do mesmo esporte
+            //Evita que um atleta tenha que enfrentar a si próprio em algum jogo futuro
+            boolean jaPossuiEquipeMesmoEsporte = usuario.getEquipes().stream()
+                    .anyMatch(equipe1 -> equipe1.getEsporte().getId().equals(equipe.getEsporteId()));
+
+            if (jaPossuiEquipeMesmoEsporte) {
+                throw new RuntimeException("O atleta " + usuario.getNome() +
+                        " já está inscrito em outra equipe deste esporte.");
+            }
         }
         equipe.setCurso(curso);
         equipe.setEsporte(esporte);
@@ -73,7 +81,6 @@ public class EquipeService {
             throw new RuntimeException("Não é possível cadastrar a equipe: Já existe uma equipe para esse curso nesse esporte");
         }
 
-        //atualizando o outro lado da relação(Usuarios)
         Equipe equipeSalva = equipeRepository.save(equipe);
 
         // Atualizando os atletas
@@ -81,7 +88,6 @@ public class EquipeService {
             atleta.getEquipes().add(equipeSalva);
         }
         // Atualizando o técnico
-
         tecnico.getEquipes().add(equipeSalva);
 
        // Salvando os usuários atualizados

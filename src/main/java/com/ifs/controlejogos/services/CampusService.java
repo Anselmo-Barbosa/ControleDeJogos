@@ -2,10 +2,8 @@ package com.ifs.controlejogos.services;
 
 import com.ifs.controlejogos.dto.CampusDTO;
 import com.ifs.controlejogos.entities.Campus;
-import com.ifs.controlejogos.entities.Curso;
 import com.ifs.controlejogos.repository.CampusRepository;
 import com.ifs.controlejogos.repository.CursoRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

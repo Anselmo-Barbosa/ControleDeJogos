@@ -26,7 +26,6 @@ public class GrupoService {
     @Autowired
     private EquipeRepository equipeRepository;
 
-    @Transactional
     public List<GrupoDTO> gerarGrupos(Long esporteId) {
         Esporte esporte = esporteRepository.findById(esporteId)
                 .orElseThrow(() -> new RuntimeException("Esporte não encontrado"));
@@ -42,7 +41,8 @@ public class GrupoService {
         int indice = 0;
         int contadorGrupo = 1;
 
-        // Enquanto ainda houver equipes para alocar
+
+        //  Enquanto ainda houver equipes para alocar
         while (indice < equipes.size()) {
             int restante = equipes.size() - indice;
             int tamanhoGrupo;
@@ -86,7 +86,6 @@ public class GrupoService {
             //Necessario pra retornar
             gruposCriados.add(grupo);
 
-            //atualizando os campos de esporte (outro lado da relação)
             esporte.getGrupos().add(grupo);
 
         }

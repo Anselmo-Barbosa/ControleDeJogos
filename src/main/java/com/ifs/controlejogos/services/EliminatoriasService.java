@@ -1,7 +1,6 @@
 package com.ifs.controlejogos.services;
 
 ;
-import com.ifs.controlejogos.dto.EsporteEmEventoDTO;
 import com.ifs.controlejogos.dto.JogoDTO;
 import com.ifs.controlejogos.entities.*;
 import com.ifs.controlejogos.form.ConfigJogoFORM;
@@ -23,8 +22,6 @@ public class EliminatoriasService {
     EquipeRepository equipeRepository;
     @Autowired
     JogoRepository jogoRepository;
-    @Autowired
-    EventoRepository eventoRepository;
     @Autowired
     JogoService jogoService;
 
@@ -52,7 +49,7 @@ public class EliminatoriasService {
             segundosColocados.add(ordenadas.get(1));
         }
 
-        // Agora alternamos: 1º do grupo 1 vs 2º de outro grupo, e assim por diante
+        // Agora alternando o 1º do grupo 1 vs 2º de outro grupo, e assim por diante
         List<Equipe> classificadosOrganizados = new ArrayList<>();
         int tamanho = primeirosColocados.size();
         // evitando confronto com o mesmo grupo
@@ -63,7 +60,7 @@ public class EliminatoriasService {
         return classificadosOrganizados;
     }
 
-    //metodo reutilizavel gera a proxima fase com vase no nas equipes e na fase atual
+
     public List<Jogo> gerarConfrontos(List<Equipe> equipes, EnumFase fase, ConfigJogoFORM config) {
         List<Jogo> jogos = new ArrayList<>();
         Queue<Equipe> fila = new LinkedList<>(equipes);
@@ -111,15 +108,14 @@ public class EliminatoriasService {
 
     //Responsável por iniciar a fase eliminatória (pega os classificados, calcula os byes, define a fase inicial)
     public List<JogoDTO> gerarFaseEliminatoria(Long esporteId, ConfigJogoFORM config) {
-        Esporte esporte = esporteRepository.findById(esporteId)
+         esporteRepository.findById(esporteId)
                 .orElseThrow(() -> new RuntimeException("Esporte não encontrado"));
-
 
         List<Equipe> classificados = pegarClassificados(esporteId);
 
         int totalEquipes = classificados.size();
-        //Retornando a proxima potencia igual ou abaixo do numero de equipes;
 
+        //Retornando a proxima potencia igual ou abaixo do numero de equipes;
         int proximaPotencia2 = Integer.highestOneBit(totalEquipes);
         if (proximaPotencia2 < totalEquipes) proximaPotencia2 *= 2;
 
@@ -164,11 +160,16 @@ public class EliminatoriasService {
         Esporte esporte = esporteRepository.findById(esporteId)
                 .orElseThrow(() -> new RuntimeException("Esporte não encontrado"));
 
+        //Verificando se ja foi gerado jogos com essa fase
+        if(jogoRepository.existsByFase(faseAtual.proxima())){
+            throw new RuntimeException("Já existe jogos gerados para a fase " + faseAtual );
+        }
 
         //Verificando se todos os jogos daquele esporte e daquela fase foram finalizados
         if (!jogoService.todosJogosFinalizadosPorEsporteEFase(esporteId, faseAtual)) {
             throw new RuntimeException("Todos os jogos da fase " + faseAtual + " devem estar finalizados.");
         }
+
         List<Jogo> jogosAnteriores = jogoRepository.findByEsporteAndFase(esporte, faseAtual);
         // Coletando os vencedores
         List<Equipe> vencedores = jogosAnteriores.stream()

@@ -1,5 +1,6 @@
 package com.ifs.controlejogos.services;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ifs.controlejogos.dto.CampusDTO;
 import com.ifs.controlejogos.dto.CoordenadorDTO;
 import com.ifs.controlejogos.dto.UsuarioDTO;
@@ -49,7 +50,7 @@ public class UsuarioService {
 
         return new UsuarioDTO(usuario);
     }
-    //R
+    //C
     @Transactional(readOnly = true)
     public List<UsuarioDTO> listarUsuarios() {
         List<Usuario> listausuarios = usuarioRepository.findAll();
@@ -116,12 +117,7 @@ public class UsuarioService {
         coordenador.setSenha(senhaGerada);
 
 
-        System.out.println("Coodenador pré cadastrado com sucesso! Informações de login enviadas por email");
-        System.out.println("id: " + coordenador.getId());
-        System.out.println("Nome: " + coordenador.getNome());
-        System.out.println("Telefone: " + coordenador.getTelefone());
-        System.out.println("Login: " + coordenador.getMatricula());
-        System.out.println("Senha: " + coordenador.getSenha());
+        System.out.println("Coodenador pré cadastrado com sucesso! Informações de login enviadas para o email do proprio");
         usuarioRepository.save(coordenador);
 
         return new CoordenadorDTO(coordenador);

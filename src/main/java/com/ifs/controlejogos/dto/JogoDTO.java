@@ -25,6 +25,7 @@ public class JogoDTO {
     private Integer placarEquipeB;
     private String vencedor;
     private boolean finalizado;
+    private String formaFinalizacao;
     private EnumFase fase;
 
     private Long esporteId;
@@ -43,6 +44,8 @@ public class JogoDTO {
         this.placarEquipeB = jogo.getPlacarEquipeB();
         this.vencedor = jogo.getVencedor();
         this.finalizado = jogo.isFinalizado();
+        this.formaFinalizacao = jogo.getFormaFinalizacao();
         this.fase = jogo.getFase();
+
     }
 }
